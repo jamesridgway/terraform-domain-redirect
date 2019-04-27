@@ -1,6 +1,7 @@
 data "aws_acm_certificate" "domain" {
+  count = "${length(var.source_domains)}"
   provider = "aws.use1"
-  domain   = "${var.source_domain}"
+  domain   = "${replace(var.source_domains[count.index], "/^www\\./", "")}"
   statuses = ["ISSUED"]
 }
 

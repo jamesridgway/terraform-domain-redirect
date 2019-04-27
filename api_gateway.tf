@@ -1,53 +1,33 @@
 resource "aws_api_gateway_domain_name" "domain" {
-  certificate_arn = "${data.aws_acm_certificate.domain.arn}"
-  domain_name     = "${var.source_domain}"
+  count = "${length(var.source_domains)}"
+  certificate_arn = "${data.aws_acm_certificate.domain.*.arn[count.index]}"
+  domain_name     = "${var.source_domains[count.index]}"
 }
 
 resource "aws_api_gateway_base_path_mapping" "domain" {
+  count = "${length(var.source_domains)}"
   api_id      = "${aws_api_gateway_rest_api.domain_redirect.id}"
   stage_name  = "${aws_api_gateway_deployment.production.stage_name}"
-  domain_name = "${aws_api_gateway_domain_name.domain.domain_name}"
+  domain_name = "${aws_api_gateway_domain_name.domain.*.domain_name[count.index]}"
 }
 
 resource "aws_route53_record" "domain" {
-  name    = "${aws_api_gateway_domain_name.domain.domain_name}"
+  count = "${length(var.source_domains)}"
+  name    = "${aws_api_gateway_domain_name.domain.*.domain_name[count.index]}"
   type    = "A"
-  zone_id = "${data.aws_route53_zone.domain.id}"
+  zone_id = "${data.aws_route53_zone.domain.*.id[count.index]}"
 
   alias {
     evaluate_target_health = true
-    name                   = "${aws_api_gateway_domain_name.domain.cloudfront_domain_name}"
-    zone_id                = "${aws_api_gateway_domain_name.domain.cloudfront_zone_id}"
-  }
-}
-
-resource "aws_api_gateway_domain_name" "www_domain" {
-  certificate_arn = "${data.aws_acm_certificate.domain.arn}"
-  domain_name     = "www.${var.source_domain}"
-}
-
-resource "aws_api_gateway_base_path_mapping" "www_domain" {
-  api_id      = "${aws_api_gateway_rest_api.domain_redirect.id}"
-  stage_name  = "${aws_api_gateway_deployment.production.stage_name}"
-  domain_name = "${aws_api_gateway_domain_name.www_domain.domain_name}"
-}
-
-resource "aws_route53_record" "www_domain" {
-  name    = "${aws_api_gateway_domain_name.www_domain.domain_name}"
-  type    = "A"
-  zone_id = "${data.aws_route53_zone.domain.id}"
-
-  alias {
-    evaluate_target_health = true
-    name                   = "${aws_api_gateway_domain_name.www_domain.cloudfront_domain_name}"
-    zone_id                = "${aws_api_gateway_domain_name.www_domain.cloudfront_zone_id}"
+    name                   = "${aws_api_gateway_domain_name.domain.*.cloudfront_domain_name[count.index]}"
+    zone_id                = "${aws_api_gateway_domain_name.domain.*.cloudfront_zone_id[count.index]}"
   }
 }
 
 
 resource "aws_api_gateway_rest_api" "domain_redirect" {
-  name        = "Domain Redirect API: ${var.source_domain}"
-  description = "Redirection API for ${var.source_domain}"
+  name        = "Domain Redirect to: ${var.destination_address}"
+  description = "Redirection API for ${var.destination_address}"
 }
 
 resource "aws_api_gateway_method" "root_method" {

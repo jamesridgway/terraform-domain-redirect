@@ -1,4 +1,5 @@
 data "aws_route53_zone" "domain" {
-  name         = "${var.source_domain}."
+  count = "${length(var.source_domains)}"
+  name  = "${replace(var.source_domains[count.index], "/^www\\./", "")}."
 }
 

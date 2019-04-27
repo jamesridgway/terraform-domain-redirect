@@ -1,6 +1,6 @@
-variable "source_domain" {
-	type = "string"
-	description = "Source domain"
+variable "source_domains" {
+	type = "list"
+	description = "List of source domains"
 }
 variable "destination_address" {
   type = "string"

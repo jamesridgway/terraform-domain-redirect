@@ -18,7 +18,7 @@ This module requires that:
 module "james-ridgeway-co-uk-redirect" {
   source = "github.com/jamesridgway/terraform-domain-redirect"
 
-  source_domain = "james-ridgeway.co.uk"
+  source_domains = ["james-ridgeway.co.uk"]
   destination_address = "https://www.jamesridgway.co.uk"
 
   providers = {
