@@ -1,5 +1,5 @@
 provider "aws" {
 }
 provider "aws" {
-  alias "aws.use1"
+  alias =  "use1"
 }
