@@ -8,19 +8,19 @@ resource "aws_api_gateway_base_path_mapping" "domain" {
   count       = length(var.source_domains)
   api_id      = aws_api_gateway_rest_api.domain_redirect.id
   stage_name  = aws_api_gateway_deployment.production.stage_name
-  domain_name = "${aws_api_gateway_domain_name.domain.*.domain_name[count.index]}"
+  domain_name = aws_api_gateway_domain_name.domain.*.domain_name[count.index]
 }
 
 resource "aws_route53_record" "domain" {
   count   = length(var.source_domains)
-  name    = "${aws_api_gateway_domain_name.domain.*.domain_name[count.index]}"
+  name    = aws_api_gateway_domain_name.domain.*.domain_name[count.index]
   type    = "A"
   zone_id = data.aws_route53_zone.domain.*.id[count.index]
 
   alias {
     evaluate_target_health = true
-    name                   = "${aws_api_gateway_domain_name.domain.*.cloudfront_domain_name[count.index]}"
-    zone_id                = "${aws_api_gateway_domain_name.domain.*.cloudfront_zone_id[count.index]}"
+    name                   = aws_api_gateway_domain_name.domain.*.cloudfront_domain_name[count.index]
+    zone_id                = aws_api_gateway_domain_name.domain.*.cloudfront_zone_id[count.index]
   }
 }
 
@@ -71,7 +71,7 @@ resource "aws_api_gateway_integration" "path_method" {
 }
 
 resource "aws_api_gateway_deployment" "production" {
-  depends_on = ["aws_api_gateway_integration.root_method", "aws_api_gateway_integration.path_method"]
+  depends_on = [aws_api_gateway_integration.root_method, aws_api_gateway_integration.path_method]
 
   rest_api_id = aws_api_gateway_rest_api.domain_redirect.id
   stage_name  = "Production"
