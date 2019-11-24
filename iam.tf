@@ -1,5 +1,5 @@
 resource "aws_iam_role" "redirect_lambda_iam" {
-  name = "redirect_lambda_iam"
+  name               = "redirect_lambda_iam"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -22,7 +22,7 @@ EOF
 
 resource "aws_iam_role_policy" "redirect_lambda_policy" {
   name = "redirect_lambda_policy"
-  role = "${aws_iam_role.redirect_lambda_iam.id}"
+  role = aws_iam_role.redirect_lambda_iam.id
 
   policy = <<EOF
 {

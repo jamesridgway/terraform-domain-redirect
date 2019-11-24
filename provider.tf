@@ -1,5 +1,5 @@
 provider "aws" {
-  alias =  "use1"
+  alias = "use1"
 }
 
 data "aws_region" "current" {
