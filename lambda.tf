@@ -10,7 +10,7 @@ resource "aws_lambda_function" "redirect" {
   role             = aws_iam_role.redirect_lambda_iam.arn
   handler          = "index.handler"
   source_code_hash = data.archive_file.redirect.output_base64sha256
-  runtime          = "nodejs8.10"
+  runtime          = "nodejs12.x"
   publish          = true
   environment {
     variables = {
